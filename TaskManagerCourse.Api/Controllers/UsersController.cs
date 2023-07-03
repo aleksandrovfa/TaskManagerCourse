@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace TaskManagerCourse.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class UsersController : ControllerBase
     {
         private readonly ApplicationContext _db;
@@ -21,13 +23,14 @@ namespace TaskManagerCourse.Api.Controllers
             _db = db;
         }
 
+        [AllowAnonymous]
         [HttpGet("test")]
         public IActionResult TestApi()
         {
             return Ok("Всем привет!");
         }
 
-
+       
         [HttpPost("create")]
         public IActionResult CreateUser([FromBody] UserModel userModel)
         {
@@ -64,6 +67,8 @@ namespace TaskManagerCourse.Api.Controllers
             }
             return BadRequest();
         }
+
+        
 
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteUser (int id)
