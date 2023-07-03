@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskManagerCourse.Api.Models;
 using TaskManagerCourse.Api.Models.Data;
+using TaskManagerCourse.Api.Models.Services;
 using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Api.Controllers
@@ -17,10 +18,13 @@ namespace TaskManagerCourse.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ApplicationContext _db;
+        private readonly UserService _usersService;
+        
 
         public UsersController(ApplicationContext db)
         {
             _db = db;
+            _usersService = new UserService(db);
         }
 
         [AllowAnonymous]
@@ -31,56 +35,34 @@ namespace TaskManagerCourse.Api.Controllers
         }
 
        
-        [HttpPost("create")]
+        [HttpPost]
         public IActionResult CreateUser([FromBody] UserModel userModel)
         {
             if (userModel != null)
             {
-                User newUser = new User(userModel.FirstName, userModel.LastName, userModel.Email,
-                    userModel.Password, userModel.Status, userModel.Phone, userModel.Photo);
-                _db.Users.Add(newUser);
-                _db.SaveChanges();
-                return Ok();
+                bool result = _usersService.Create(userModel);
+                return result ?Ok() : NotFound();
             }
             return BadRequest();
         }
-        [HttpPatch("update/{id}")]
+        [HttpPatch("{id}")]
         public IActionResult UpdateUser(int id, [FromBody] UserModel userModel)
         {
             if (userModel != null)
             {
-                User userForUpdate = _db.Users.FirstOrDefault(x => x.Id == id);
-                if (userForUpdate != null)
-                {
-                    userForUpdate.FirstName = userModel.FirstName;
-                    userForUpdate.LastName = userModel.LastName;
-                    userForUpdate.Password = userModel.Password;
-                    userForUpdate.Phone = userModel.Phone;
-                    userForUpdate.Photo = userModel.Photo;
-                    userForUpdate.Status = userModel.Status;
-                    userForUpdate.Email = userModel.Email;
-                    _db.Users.Update(userForUpdate);
-                    _db.SaveChanges();
-                    return Ok();
-                }
-                return NotFound();
+                bool result = _usersService.Update(id, userModel);
+                return result ? Ok() : NotFound();
             }
             return BadRequest();
         }
 
         
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteUser (int id)
         {
-            User user = _db.Users.FirstOrDefault(x => x.Id == id);
-            if (user != null)
-            {
-                _db.Users.Remove(user);
-                _db.SaveChanges();
-                return Ok();
-            }
-            return NotFound();
+            bool result = _usersService.Delete(id);
+            return result ? Ok() : NotFound();
         }
 
         [HttpGet]
@@ -94,10 +76,8 @@ namespace TaskManagerCourse.Api.Controllers
         {
             if (userModels != null && userModels.Count > 0)
             {
-                var newUsers = userModels.Select(u => new User(u));
-                _db.Users.AddRange(newUsers);
-                await _db.SaveChangesAsync();
-                return Ok();
+                bool result = _usersService.CreateMultipleUsers(userModels);
+                return result ? Ok() : NotFound();
             }
             return BadRequest();
         }

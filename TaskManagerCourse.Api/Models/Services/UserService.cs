@@ -1,14 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using TaskManagerCourse.Api.Models.Abstractions;
 using TaskManagerCourse.Api.Models.Data;
+using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Api.Models.Services
 {
-    public class UserService
+    public class UserService : ICommandService<UserModel>
     {
         private readonly ApplicationContext _db;
         public UserService(ApplicationContext db)
@@ -16,7 +20,7 @@ namespace TaskManagerCourse.Api.Models.Services
             _db = db;
         }
 
-        public Tuple<string,string> GetUserLoginPassFromBasicAuth(HttpRequest request)
+        public Tuple<string, string> GetUserLoginPassFromBasicAuth(HttpRequest request)
         {
             string userName = "";
             string userPass = "";
@@ -41,24 +45,114 @@ namespace TaskManagerCourse.Api.Models.Services
         public ClaimsIdentity GetIdentity(string username, string password)
         {
             User currentUser = GetUser(username, password);
-            if (currentUser != null) 
+            if (currentUser != null)
             {
                 currentUser.LastLoginDate = DateTime.Now;
                 _db.Users.Update(currentUser);
                 _db.SaveChanges();
 
-                var claims = new List<Claim> 
+                var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, currentUser.Email),
                     new Claim(ClaimsIdentity.DefaultRoleClaimType, currentUser.Status.ToString()),
                 };
 
-                ClaimsIdentity claimsIdentity = 
-                    new ClaimsIdentity(claims,"Token", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity claimsIdentity =
+                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
                     ClaimsIdentity.DefaultRoleClaimType);
                 return claimsIdentity;
             }
             return null;
+        }
+
+        public bool Create(UserModel model)
+        {
+
+            return DoAction(delegate ()
+            {
+                User newUser = new User(model.FirstName, model.LastName, model.Email,
+                  model.Password, model.Status, model.Phone, model.Photo);
+                _db.Users.Add(newUser);
+                _db.SaveChanges();
+            });
+
+            //try
+            //{
+            //    User newUser = new User(model.FirstName, model.LastName, model.Email,
+            //      model.Password, model.Status, model.Phone, model.Photo);
+            //    _db.Users.Add(newUser);
+            //    _db.SaveChanges();
+            //    return true;
+            //}
+            //catch (Exception ex)
+            //{
+            //    return false;
+            //}
+        }
+
+        public bool Update(int id, UserModel model)
+        {
+
+            User userForUpdate = _db.Users.FirstOrDefault(x => x.Id == id);
+
+            if (userForUpdate != null)
+            {
+
+                return DoAction(delegate ()
+                {
+                    userForUpdate.FirstName = model.FirstName;
+                    userForUpdate.LastName = model.LastName;
+                    userForUpdate.Password = model.Password;
+                    userForUpdate.Phone = model.Phone;
+                    userForUpdate.Photo = model.Photo;
+                    userForUpdate.Status = model.Status;
+                    userForUpdate.Email = model.Email;
+                    _db.Users.Update(userForUpdate);
+                    _db.SaveChanges();
+                });
+            }
+            return false;
+        }
+
+        public bool Delete(int id)
+        {
+            User user = _db.Users.FirstOrDefault(x => x.Id == id);
+            if (user != null)
+            {
+                return DoAction(delegate ()
+                {
+                    _db.Users.Remove(user);
+                    _db.SaveChanges();
+                });
+            }
+            return false;
+
+            
+
+
+        }
+
+        public bool CreateMultipleUsers(List<UserModel> userModels)
+        {
+            return DoAction(delegate ()
+                {
+                    var newUsers = userModels.Select(u => new User(u));
+                    _db.Users.AddRange(newUsers);
+                    _db.SaveChangesAsync();
+                });
+        }
+
+        private bool DoAction(Action action)
+        {
+            try
+            {
+                action.Invoke();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }
