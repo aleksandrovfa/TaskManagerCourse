@@ -12,10 +12,10 @@ using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Api.Models.Services
 {
-    public class UserService : ICommandService<UserModel>
+    public class UsersService :AbstractionService, ICommonService<UserModel>
     {
         private readonly ApplicationContext _db;
-        public UserService(ApplicationContext db)
+        public UsersService(ApplicationContext db)
         {
             _db = db;
         }
@@ -42,6 +42,13 @@ namespace TaskManagerCourse.Api.Models.Services
             var user = _db.Users.FirstOrDefault(u => u.Email == login && u.Password == password);
             return user;
         }
+
+        public User GetUser(string login)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Email == login);
+            return user;
+        }
+
         public ClaimsIdentity GetIdentity(string username, string password)
         {
             User currentUser = GetUser(username, password);
@@ -98,7 +105,7 @@ namespace TaskManagerCourse.Api.Models.Services
             if (userForUpdate != null)
             {
 
-                return DoAction(delegate ()
+                DoAction(delegate ()
                 {
                     userForUpdate.FirstName = model.FirstName;
                     userForUpdate.LastName = model.LastName;
@@ -142,17 +149,6 @@ namespace TaskManagerCourse.Api.Models.Services
                 });
         }
 
-        private bool DoAction(Action action)
-        {
-            try
-            {
-                action.Invoke();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        
     }
 }

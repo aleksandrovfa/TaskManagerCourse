@@ -17,11 +17,11 @@ namespace TaskManagerCourse.Api.Controllers
     public class AccountController : ControllerBase
     {
         private readonly ApplicationContext _db;
-        private readonly UserService _usersService;
+        private readonly UsersService _usersService;
         public AccountController(ApplicationContext db)
         {
             _db = db;
-            _usersService = new UserService(db);
+            _usersService = new UsersService(db);
         }
         [HttpGet("info")]
         public IActionResult GetCurrentUserInfo()

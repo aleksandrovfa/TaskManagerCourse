@@ -1,6 +1,6 @@
 ﻿namespace TaskManagerCourse.Api.Models.Abstractions
 {
-    public interface ICommandService<T>
+    public interface ICommonService<T>
     {
         bool Create(T model);
         bool Update(int id,T model);

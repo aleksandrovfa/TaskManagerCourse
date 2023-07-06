@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManagerCourse.Api.Models
+namespace TaskManagerCourse.Common.Models
 {
     public enum ProjectStatus
     {
