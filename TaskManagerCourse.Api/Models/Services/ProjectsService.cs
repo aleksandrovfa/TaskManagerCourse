@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,8 @@ namespace TaskManagerCourse.Api.Models.Services
             return result;
         }
 
+
+
         public bool Update(int id, ProjectModel model)
         {
 
@@ -56,9 +59,68 @@ namespace TaskManagerCourse.Api.Models.Services
                 _db.SaveChanges();
             });
             return result;
+        }
 
+        public ProjectModel Get(int id)
+        {
+            Project project = _db.Projects.FirstOrDefault(p => p.Id == id);
+            return project?.ToDto();
+        }
 
-            
+        public async Task<IEnumerable<ProjectModel>> GetByUserId(int userId)
+        {
+            List<ProjectModel> result = new List<ProjectModel>();
+            var admin = _db.ProjectAdmins.FirstOrDefault(p => p.UserId == userId);
+            if (admin != null)
+            {
+                var projectsForAdmin =await _db.Projects
+                    .Where(x => x.AdminId == admin.Id)
+                    .Select(x => x.ToDto())
+                    .ToListAsync();
+                result.AddRange(projectsForAdmin);
+            }
+            var projectsForUser =await _db.Projects
+                .Include(p => p.AllUsers)
+                .Where(p => p.AllUsers.Any(u => u.Id == userId))
+                .Select(x => x.ToDto())
+                .ToListAsync();
+
+            result.AddRange(projectsForUser);
+            return result;
+        }
+
+        public IQueryable<ProjectModel> GetAll()
+        {
+            return  _db.Projects.Select(p => p.ToDto());
+
+        }
+
+        public void AddUsersToProject(int id, List<int> userIds)
+        {
+            Project project = _db.Projects.FirstOrDefault(p => p.Id == id);
+
+            foreach (int userId in userIds)
+            {
+                var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+                project.AllUsers.Add(user);
+            }
+            _db.SaveChanges();
+        }
+
+        public void RemoveUsersFromProject(int id, List<int> userIds)
+        {
+            Project project = _db.Projects.Include(p => p.AllUsers).FirstOrDefault(p => p.Id == id);
+
+            foreach (int userId in userIds)
+            {
+                var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+                if (project.AllUsers.Contains(user))
+                {
+                    project.AllUsers.Remove(user);
+                }
+            }
+            _db.SaveChanges();
         }
     }
 }
+
