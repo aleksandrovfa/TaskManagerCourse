@@ -63,12 +63,16 @@ namespace TaskManagerCourse.Api.Models.Services
 
         public ProjectModel Get(int id)
         {
-            Project project = _db.Projects.Include(p => p.AllUsers).FirstOrDefault(p => p.Id == id);
-            // get all users from projects
+            Project project = _db.Projects
+                .Include(p => p.AllUsers)
+                .Include(p => p.AllDesks)
+                .FirstOrDefault(p => p.Id == id);
+            
             var projectModel = project?.ToDto();
             if (projectModel != null)
             {
                 projectModel.AllUsersIds = project.AllUsers.Select(x => x.Id).ToList();
+                projectModel.AllDesksIds = project.AllDesks.Select(x => x.Id).ToList();
             }
             return projectModel;
         }
@@ -108,7 +112,11 @@ namespace TaskManagerCourse.Api.Models.Services
             foreach (int userId in userIds)
             {
                 var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-                project.AllUsers.Add(user);
+                if(project.AllUsers.Contains(user) == false)
+                {
+                    project.AllUsers.Add(user);
+                }
+                    
             }
             _db.SaveChanges();
         }
