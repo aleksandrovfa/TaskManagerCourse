@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,35 +7,37 @@ using TaskManagerCourse.Api.Models.Data;
 using TaskManagerCourse.Api.Models.Services;
 using TaskManagerCourse.Common.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace TaskManagerCourse.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class DesksController : ControllerBase
+    public class TasksController : ControllerBase
     {
 
         private readonly ApplicationContext _db;
         private readonly UsersService _usersService;
-        private readonly DesksService _desksService;
+        private readonly TasksService _tasksService;
 
-        public DesksController(ApplicationContext db)
+        public TasksController(ApplicationContext db)
         {
             _db = db;
             _usersService = new UsersService(db);
-            _desksService = new DesksService(db);
+            _tasksService = new TasksService(db);
         }
 
         [HttpGet]
-        public async Task<IEnumerable<CommonModel>> GetDeskForCurrentUser()
+        public async Task<IEnumerable<CommonModel>> GetTasksByDesk(int deskId)
+        {
+            return await _tasksService.GetAll(deskId).ToListAsync();
+        }
+
+        [HttpGet("user")]
+        public async Task<IEnumerable<CommonModel>> GetTasksForCurrentUser()
         {
             var user = _usersService.GetUser(HttpContext.User.Identity.Name);
             if (user != null)
             {
-                var models = await _desksService.GetAll(user.Id).ToListAsync();
-                return models;
+                return await _tasksService.GetTasksForUser(user.Id).ToListAsync();
             }
             return Array.Empty<CommonModel>();
         }
@@ -45,35 +46,20 @@ namespace TaskManagerCourse.Api.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var desk =  _desksService.Get(id);
-            return desk == null ? NotFound() : Ok(desk);
+            var task = _tasksService.Get(id);
+            return task == null ? NotFound() : Ok(task);
         }
-
-
-        [HttpGet("project")]
-        public async Task<IEnumerable<CommonModel>> GetProjectDesks(int projectId)
-        {
-            var user = _usersService.GetUser(HttpContext.User.Identity.Name);
-            if (user != null)
-            {
-                var desks = await _desksService.GetProjectDesks(projectId, user.Id).ToListAsync();
-                return desks;
-            }
-            return Array.Empty<CommonModel>();
-        }
-
-
 
         [HttpPost]
-        public IActionResult Create([FromBody] DeskModel deskModel)
+        public IActionResult Create([FromBody] TaskModel taskModel)
         {
             var user = _usersService.GetUser(HttpContext.User.Identity.Name);
             if (user != null)
             {
-                if (deskModel != null)
+                if (taskModel != null)
                 {
-                    deskModel.AdminId = user.Id;
-                    bool result = _desksService.Create(deskModel);
+                    taskModel.CreatorId = user.Id;
+                    bool result = _tasksService.Create(taskModel);
                     return result ? Ok() : NotFound();
 
                 }
@@ -84,14 +70,14 @@ namespace TaskManagerCourse.Api.Controllers
 
 
         [HttpPatch("{id}")]
-        public IActionResult Update(int id, [FromBody] DeskModel deskModel)
+        public IActionResult Update(int id, [FromBody] TaskModel model)
         {
             var user = _usersService.GetUser(HttpContext.User.Identity.Name);
             if (user != null)
             {
-                if (deskModel != null)
+                if (model != null)
                 {
-                    bool result = _desksService.Update(id,deskModel);
+                    bool result = _tasksService.Update(id, model);
                     return result ? Ok() : NotFound();
 
                 }
@@ -101,10 +87,11 @@ namespace TaskManagerCourse.Api.Controllers
         }
 
 
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            bool result = _desksService.Delete(id);
+            bool result = _tasksService.Delete(id);
             return result ? Ok() : NotFound();
         }
     }
