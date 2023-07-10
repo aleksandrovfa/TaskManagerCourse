@@ -64,7 +64,6 @@ namespace TaskManagerCourse.Api.Models.Services
                 desk.Photo = model.Photo;
                 desk.AdminId = model.AdminId;
                 desk.IsPrivate = model.IsPrivate;
-                desk.ProjectId = model.ProjectId;
                 desk.Columns = JsonConvert.SerializeObject(model.Columns);
                 _db.Desks.Update(desk);
                 _db.SaveChanges();
