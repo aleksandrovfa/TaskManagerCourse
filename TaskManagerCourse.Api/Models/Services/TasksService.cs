@@ -67,18 +67,18 @@ namespace TaskManagerCourse.Api.Models.Services
             return result;
         }
 
-        public IQueryable<CommonModel> GetTasksForUser(int userId)
+        public IQueryable<TaskModel> GetTasksForUser(int userId)
         {
             return _db.Tasks
                 .Where(t => t.CreatorId == userId || t.ExecutorId == userId)
-                .Select(x => x.ToDto() as CommonModel);
+                .Select(x => x.ToShortDto());
         }
 
 
-        public IQueryable<CommonModel> GetAll(int deskId)
+        public IQueryable<TaskModel> GetAll(int deskId)
         {
             return _db.Tasks.Where(d => d.DeskId == deskId)
-                .Select(x => x.ToDto() as CommonModel);
+                .Select(x => x.ToShortDto());
         }
 
     }

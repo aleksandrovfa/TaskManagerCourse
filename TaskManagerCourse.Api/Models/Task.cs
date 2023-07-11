@@ -54,5 +54,22 @@ namespace TaskManagerCourse.Api.Models
             };
         }
 
+        public TaskModel ToShortDto()
+        {
+            return new TaskModel()
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Description = this.Description,
+                CreationDate = this.CreationDate,
+                StartDate = this.StartDate,
+                EndDate = this.EndDate,
+                DeskId = this.DeskId,
+                Column = this.Column,
+                CreatorId = this.CreatorId,
+                ExecutorId = this.ExecutorId,
+            };
+        }
+
     }
 }

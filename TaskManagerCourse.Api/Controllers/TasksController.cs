@@ -26,20 +26,22 @@ namespace TaskManagerCourse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<CommonModel>> GetTasksByDesk(int deskId)
+        public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasksByDesk(int deskId)
         {
-            return await _tasksService.GetAll(deskId).ToListAsync();
+            var result = await _tasksService.GetAll(deskId).ToListAsync();
+            return result == null ? NotFound(result) : Ok(result);
         }
 
         [HttpGet("user")]
-        public async Task<IEnumerable<CommonModel>> GetTasksForCurrentUser()
+        public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasksForCurrentUser()
         {
             var user = _usersService.GetUser(HttpContext.User.Identity.Name);
             if (user != null)
             {
-                return await _tasksService.GetTasksForUser(user.Id).ToListAsync();
+                var result = await _tasksService.GetTasksForUser(user.Id).ToListAsync();
+                return result == null ? NotFound(result) : Ok(result);
             }
-            return Array.Empty<CommonModel>();
+            return Unauthorized(Array.Empty<CommonModel>());
         }
 
 
