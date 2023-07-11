@@ -74,14 +74,14 @@ namespace TaskManagerCourse.Api.Models.Services
         public IQueryable<CommonModel> GetAll(int userId)
         {
             return _db.Desks.Where(d => d.AdminId == userId)
-                .Select(x => x.ToDto() as CommonModel);
+                .Select(x => x.ToShortDto());
         }
 
         public IQueryable<CommonModel> GetProjectDesks(int projectId, int userId)
         {
             return _db.Desks.Where(d => d.ProjectId == projectId &&
             (d.AdminId == userId || d.IsPrivate == false))
-                .Select(p => p.ToDto() as CommonModel);
+                .Select(p => p.ToShortDto());
 
         }
 
