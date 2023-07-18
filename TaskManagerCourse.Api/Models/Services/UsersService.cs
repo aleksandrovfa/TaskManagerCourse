@@ -105,7 +105,7 @@ namespace TaskManagerCourse.Api.Models.Services
             if (userForUpdate != null)
             {
 
-                DoAction(delegate ()
+                return DoAction(delegate ()
                 {
                     userForUpdate.FirstName = model.FirstName;
                     userForUpdate.LastName = model.LastName;
