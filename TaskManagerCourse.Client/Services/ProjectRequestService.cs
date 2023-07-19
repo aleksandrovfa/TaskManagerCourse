@@ -30,7 +30,7 @@ namespace TaskManagerCourse.Client.Services
         public HttpStatusCode CreateProject(AuthToken token, ProjectModel project)
         {
             string projectJson = JsonConvert.SerializeObject(project);
-            var result = SendDataByUrl(HttpMethod.Get, _projectsControllerUrl, token, projectJson);
+            var result = SendDataByUrl(HttpMethod.Post, _projectsControllerUrl, token, projectJson);
             return result;
         }
 
@@ -57,7 +57,7 @@ namespace TaskManagerCourse.Client.Services
         public HttpStatusCode RemoveUsersFromProject(AuthToken token, int projectId, List<int> userIds)
         {
             string useridsJson = JsonConvert.SerializeObject(userIds);
-            var result = SendDataByUrl(HttpMethod.Patch, _projectsControllerUrl + $"/{projectId}/remove", token, useridsJson);
+            var result = SendDataByUrl(HttpMethod.Patch, _projectsControllerUrl + $"/{projectId}/users/remove", token, useridsJson);
             return result;
         }
     }

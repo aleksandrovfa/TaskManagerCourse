@@ -54,7 +54,7 @@ namespace TaskManagerCourse.Api.Models.Services
                 newProject.Description = model.Description;
                 newProject.Photo = model.Photo;
                 newProject.Status = model.Status;
-                newProject.AdminId = model.AdminId;
+                //newProject.AdminId = model.AdminId;
                 _db.Projects.Update(newProject);
                 _db.SaveChanges();
             });

@@ -9,5 +9,13 @@ namespace TaskManagerCourse.Common.Models
         public int? AdminId { get; set; }
         public List<int> AllUsersIds { get; set; } 
         public List<int> AllDesksIds { get; set; } 
+
+        public ProjectModel() { }
+        public ProjectModel(string name, string description , ProjectStatus status)
+        {
+            Name = name;
+            Description = description;
+            Status = status;
+        }
     }
 }
