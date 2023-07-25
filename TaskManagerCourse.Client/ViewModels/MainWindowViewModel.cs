@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TaskManagerCourse.Client.Models;
+using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Client.ViewModels
 {
@@ -19,10 +21,15 @@ namespace TaskManagerCourse.Client.ViewModels
         public DelegateCommand OpenTasksPageCommand;
         public DelegateCommand LogoutCommand;
 
+        public DelegateCommand OpenUserManagementCommand;
+
 
         #endregion 
-        public MainWindowViewModel ()
+        public MainWindowViewModel (AuthToken token, UserModel currentUser)
         {
+            Token = token;
+            CurrentUser = currentUser;
+
             OpenMyInfoPageCommand = new DelegateCommand (OpenMyInfoPage);
             NavButtons.Add(_userInfoBtnName,OpenMyInfoPageCommand);
 
@@ -35,6 +42,12 @@ namespace TaskManagerCourse.Client.ViewModels
             OpenTasksPageCommand = new DelegateCommand (OpenTasksPage);
             NavButtons.Add(_userTasksBtnName,OpenTasksPageCommand);
 
+            if (CurrentUser.Status == UserStatus.Admin)
+            {
+                OpenUserManagementCommand = new DelegateCommand(OpenUserManagement);
+                NavButtons.Add(_manageUserBtnName,OpenUserManagementCommand);
+            }
+
             LogoutCommand = new DelegateCommand (Logout);
             NavButtons.Add(_logoutBtnName,LogoutCommand);
         }
@@ -46,6 +59,32 @@ namespace TaskManagerCourse.Client.ViewModels
         private readonly string _userTasksBtnName = "My tasks";
         private readonly string _userInfoBtnName = "My info";
         private readonly string _logoutBtnName = "Logout";
+
+        private readonly string _manageUserBtnName = "Users";
+
+        private AuthToken _token;
+
+        public AuthToken Token
+        {
+            get => _token;
+            private set
+            {
+                _token = value;
+                RaisePropertyChanged(nameof(Token));
+            }
+        }
+
+        private UserModel _currentUser;
+
+        public UserModel CurrentUser
+        {
+            get => _currentUser;
+            set
+            {
+                _currentUser = value;
+                RaisePropertyChanged(nameof(CurrentUser));
+            }
+        }
 
         private Dictionary<string, DelegateCommand> _navButtons = new Dictionary<string, DelegateCommand>();
 
@@ -86,6 +125,11 @@ namespace TaskManagerCourse.Client.ViewModels
         private void Logout()
         {
             ShowMessage(_logoutBtnName);
+        }
+
+        private void OpenUserManagement()
+        {
+            ShowMessage(_manageUserBtnName);
         }
 
         #endregion

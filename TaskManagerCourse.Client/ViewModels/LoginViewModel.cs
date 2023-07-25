@@ -168,6 +168,7 @@ namespace TaskManagerCourse.Client.ViewModels
         private void OpenMainWindow()
         {
             MainWindow window = new MainWindow();
+            window.DataContext = new MainWindowViewModel(AuthToken, CurrentUser);
             window.Show();
             _currentWnd.Close();
 
