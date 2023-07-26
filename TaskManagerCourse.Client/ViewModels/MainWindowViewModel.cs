@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using TaskManagerCourse.Client.Models;
+using TaskManagerCourse.Client.Views.Pages;
 using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Client.ViewModels
@@ -98,27 +100,55 @@ namespace TaskManagerCourse.Client.ViewModels
             }
         }
 
+        private string _selectedPageName;
+        public string SelectedPageName
+        {
+            get => _selectedPageName;
+            set
+            {
+                _selectedPageName = value;
+                RaisePropertyChanged(nameof(SelectedPageName));
+            }
+        }
+
+        private Page _selectedPage;
+        public Page SelectedPage
+        {
+            get => _selectedPage;
+            set
+            {
+                _selectedPage = value;
+                RaisePropertyChanged(nameof(SelectedPage));
+            }
+        }
+
         #endregion
 
         #region METHODS
         private void OpenMyInfoPage()
         {
-            ShowMessage(_userInfoBtnName);
+            var page = new UserInfoPage();
+            page.DataContext = this;
+            OpenPage(page, _userInfoBtnName);
+            
         }
 
         private void OpenDesksPage()
         {
+            SelectedPageName = _userDesksBtnName;
             ShowMessage(_userDesksBtnName);
         }
 
 
         private void OpenProjectsPage()
         {
+            SelectedPageName = _userProjectsBtnName;
             ShowMessage(_userProjectsBtnName);
         }
 
         private void OpenTasksPage()
         {
+            SelectedPageName = _userTasksBtnName;
             ShowMessage(_userTasksBtnName);
         }
 
@@ -129,6 +159,7 @@ namespace TaskManagerCourse.Client.ViewModels
 
         private void OpenUserManagement()
         {
+            SelectedPageName = _manageUserBtnName;
             ShowMessage(_manageUserBtnName);
         }
 
@@ -137,6 +168,12 @@ namespace TaskManagerCourse.Client.ViewModels
         private void ShowMessage(string message)
         {
             MessageBox.Show(message);
+        }
+
+        private void OpenPage(Page page, string pageName)
+        {
+            SelectedPageName = pageName;
+            SelectedPage = page;
         }
     }
 }
