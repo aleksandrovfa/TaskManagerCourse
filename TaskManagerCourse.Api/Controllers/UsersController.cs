@@ -56,7 +56,13 @@ namespace TaskManagerCourse.Api.Controllers
             return BadRequest();
         }
 
-        
+        [HttpGet("{id}")]
+        public ActionResult<UserModel> GetUser(int id)
+        {
+            var user = _usersService.Get(id);
+            return user == null? NotFound() : Ok(user);
+        }
+
 
         [HttpDelete("{id}")]
         public IActionResult DeleteUser (int id)

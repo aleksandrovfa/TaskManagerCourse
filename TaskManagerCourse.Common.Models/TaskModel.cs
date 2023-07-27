@@ -14,7 +14,8 @@ namespace TaskManagerCourse.Common.Models
 
         public TaskModel () { }
 
-        public TaskModel ( string name ,string description, DateTime startDate, DateTime endDate, string column)         {
+        public TaskModel ( string name ,string description, DateTime startDate, DateTime endDate, string column) 
+        {
             Name = name;
             Description = description;
             StartDate = startDate;
