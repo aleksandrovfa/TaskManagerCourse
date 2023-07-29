@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using TaskManagerCourse.Client.Models;
+using TaskManagerCourse.Client.Services;
 using TaskManagerCourse.Client.Views;
 using TaskManagerCourse.Client.Views.Pages;
 using TaskManagerCourse.Common.Models;
@@ -16,6 +17,8 @@ namespace TaskManagerCourse.Client.ViewModels
 {
     public class MainWindowViewModel: BindableBase
     {
+        private CommonViewService _viewService;
+
         #region COMMANDS
 
         public DelegateCommand OpenMyInfoPageCommand;
@@ -30,6 +33,8 @@ namespace TaskManagerCourse.Client.ViewModels
         #endregion 
         public MainWindowViewModel (AuthToken token, UserModel currentUser, Window currentWindow= null)
         {
+            _viewService = new CommonViewService();
+
             Token = token;
             CurrentUser = currentUser;
             _currentWindow = currentWindow;
@@ -142,14 +147,14 @@ namespace TaskManagerCourse.Client.ViewModels
         private void OpenDesksPage()
         {
             SelectedPageName = _userDesksBtnName;
-            ShowMessage(_userDesksBtnName);
+            _viewService.ShowMessage(_userDesksBtnName);
         }
 
 
         private void OpenProjectsPage()
         {
-            SelectedPageName = _userProjectsBtnName;
-            ShowMessage(_userProjectsBtnName);
+            var page = new ProjectsPage();
+            OpenPage(page, _userProjectsBtnName, new ProjectsPageViewModel(Token));
         }
 
         private void OpenTasksPage()
@@ -167,21 +172,18 @@ namespace TaskManagerCourse.Client.ViewModels
                 login.Show();
                 _currentWindow.Close();
             }
-            ShowMessage(_logoutBtnName);
+            _viewService.ShowMessage(_logoutBtnName);
         }
 
         private void OpenUserManagement()
         {
             SelectedPageName = _manageUserBtnName;
-            ShowMessage(_manageUserBtnName);
+            _viewService.ShowMessage(_manageUserBtnName);
         }
 
         #endregion
 
-        private void ShowMessage(string message)
-        {
-            MessageBox.Show(message);
-        }
+      
 
         private void OpenPage(Page page, string pageName, BindableBase viewModel)
         {

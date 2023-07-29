@@ -11,7 +11,7 @@ using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Client.Services
 {
-    public class ProjectRequestService : CommonRequestService
+    public class ProjectsRequestService : CommonRequestService
     {
         private string _projectsControllerUrl = HOST + "projects";
         public List<ProjectModel> GetAllProjects(AuthToken token)

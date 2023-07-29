@@ -13,12 +13,12 @@ namespace TaskManagerCourse.Client.Services.Tests
     public class ProjectRequestServiceTests
     {
         private AuthToken _token;
-        private ProjectRequestService _service;
+        private ProjectsRequestService _service;
 
         public ProjectRequestServiceTests()
         {
             _token = new UsersRequestService().GetToken("fedfed95@yandex.ru", "qwerty");
-            _service = new ProjectRequestService();
+            _service = new ProjectsRequestService();
         }
 
         [TestMethod()]
