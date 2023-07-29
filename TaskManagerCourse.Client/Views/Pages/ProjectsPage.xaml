@@ -28,24 +28,27 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Style="{StaticResource commonBorder}">
+                            <Border Style="{StaticResource projectPanelBorder}">
                                 <StackPanel Margin="10">
                                     <TextBlock Text="{Binding Path=Model.Name}"
                                                Style="{StaticResource commonTBlock}"/>
                                     
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Numbers" Style="{StaticResource commonTBlock}"/>
-                                        <TextBlock Text="{Binding Path=Model.AllUserIds.Count}" Style="{StaticResource commonTBlock}"/>
-                                    </StackPanel>
+                                  
                                     
                                     <Image Source="{Binding Path=Image}" Width="100" Height="100"/>
                                     
-                                    <Button Content="Open" Command="{Binding Path= DataContext.ShowProjectInfoCommand,
-                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Content="Edit" Command="{Binding Path= DataContext.OpenUpdateProjectCommand,
-                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            CommandParameter="{Binding}"/>
+                                    <Button Content="Open" 
+                                            Command="{Binding Path= DataContext.ShowProjectInfoCommand,
+                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Path=Model.Id}"
+                                            Style="{StaticResource commonBtn}"/>
+                                    
+                                    
+                                    <Button Content="Edit" 
+                                            Command="{Binding Path= DataContext.OpenUpdateProjectCommand,
+                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Path=Model.Id}"
+                                            Style="{StaticResource commonBtn}"/>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
@@ -63,7 +66,7 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="{Binding SelectedProject.Model.Name}"
                        Style="{StaticResource headerTBlock}"/>
-            <TextBlock Grid.Row="0" Text="{Binding SelectedProject.Model.Description}"
+            <TextBlock Grid.Row="1" Text="{Binding SelectedProject.Model.Description}"
                        Style="{StaticResource commonTBlock}"/>
             <Button Grid.Row="2" Content="Add users" Command="{Binding}" Style="{StaticResource commonBtn}"/>
             <Button Grid.Row="3" Content="Desks" Command="{Binding}" Style="{StaticResource commonBtn}"/>

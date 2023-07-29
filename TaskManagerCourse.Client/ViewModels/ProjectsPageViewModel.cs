@@ -19,9 +19,9 @@ namespace TaskManagerCourse.Client.ViewModels
         private CommonViewService _viewService;
 
         #region COMMANDS
-        public DelegateCommand OpenNewProjectCommand;
-        public DelegateCommand<object> OpenUpdateProjectCommand;
-        public DelegateCommand<object> ShowProjectInfoCommand;
+        public DelegateCommand OpenNewProjectCommand { get; private set; }
+        public DelegateCommand<object> OpenUpdateProjectCommand { get; private set; }
+        public DelegateCommand<object> ShowProjectInfoCommand { get; private set; }
         #endregion
 
         public ProjectsPageViewModel (AuthToken token)
@@ -56,11 +56,15 @@ namespace TaskManagerCourse.Client.ViewModels
             {
                 _selectedProject = value;
                 RaisePropertyChanged(nameof(SelectedProject));
-                if (SelectedProject.Model.AllUsersIds != null || SelectedProject.Model.AllUsersIds.Count>0)
+                if (SelectedProject.Model.AllUsersIds != null && SelectedProject.Model.AllUsersIds.Count>0)
                 {
                     ProjectUsers = SelectedProject.Model.AllUsersIds?
                     .Select(userId => _usersRequestService.GetUserById(_token, userId))
                     .ToList();
+                }
+                else
+                {
+                    ProjectUsers = new List<UserModel> ();
                 }
                 
             }
@@ -88,18 +92,31 @@ namespace TaskManagerCourse.Client.ViewModels
             _viewService.ShowMessage(nameof(OpenNewProject));
         }
 
-        private void OpenUpdateProject(object param)
+        private void OpenUpdateProject(object projectId)
         {
-            var selectedProject = param as ModelClient<ProjectModel>;
-            SelectedProject = selectedProject;
-            _viewService.ShowMessage(nameof(OpenNewProject));
+            SelectedProject = GetProjectClientById(projectId);
         }
 
-        private void ShowProjectInfo(object param)
+        private void ShowProjectInfo(object projectId)
         {
-            var selectedProject = param as ModelClient<ProjectModel>;
-            SelectedProject = selectedProject;
-            _viewService.ShowMessage(nameof(ShowProjectInfo));
+            
+            SelectedProject = GetProjectClientById(projectId);
+        }
+
+
+        private ModelClient<ProjectModel> GetProjectClientById(object projectId)
+        {
+            try
+            {
+                int id = (int)projectId;
+                ProjectModel project = _projectsRequestService.GetProjectsById(_token, id);
+                return new ModelClient<ProjectModel>(project);
+            }
+            catch (FormatException ex)
+            {
+                return new ModelClient<ProjectModel>(null);
+            }
+           
         }
         #endregion
     }

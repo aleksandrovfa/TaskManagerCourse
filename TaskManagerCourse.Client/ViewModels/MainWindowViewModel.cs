@@ -15,51 +15,51 @@ using TaskManagerCourse.Common.Models;
 
 namespace TaskManagerCourse.Client.ViewModels
 {
-    public class MainWindowViewModel: BindableBase
+    public class MainWindowViewModel : BindableBase
     {
         private CommonViewService _viewService;
 
         #region COMMANDS
 
-        public DelegateCommand OpenMyInfoPageCommand;
-        public DelegateCommand OpenDesksPageCommand;
-        public DelegateCommand OpenProjectsPageCommand;
-        public DelegateCommand OpenTasksPageCommand;
-        public DelegateCommand LogoutCommand;
+        public DelegateCommand OpenMyInfoPageCommand { get; private set; }
+        public DelegateCommand OpenDesksPageCommand { get; private set; }
+        public DelegateCommand OpenProjectsPageCommand { get; private set; }
+        public DelegateCommand OpenTasksPageCommand { get; private set; }
+        public DelegateCommand LogoutCommand { get; private set; }
 
         public DelegateCommand OpenUserManagementCommand;
 
 
         #endregion 
-        public MainWindowViewModel (AuthToken token, UserModel currentUser, Window currentWindow= null)
+        public MainWindowViewModel(AuthToken token, UserModel currentUser, Window currentWindow = null)
         {
             _viewService = new CommonViewService();
 
             Token = token;
             CurrentUser = currentUser;
             _currentWindow = currentWindow;
-            
 
-            OpenMyInfoPageCommand = new DelegateCommand (OpenMyInfoPage);
-            NavButtons.Add(_userInfoBtnName,OpenMyInfoPageCommand);
 
-            OpenDesksPageCommand = new DelegateCommand (OpenDesksPage);
-            NavButtons.Add(_userDesksBtnName,OpenDesksPageCommand);
+            OpenMyInfoPageCommand = new DelegateCommand(OpenMyInfoPage);
+            NavButtons.Add(_userInfoBtnName, OpenMyInfoPageCommand);
 
-            OpenProjectsPageCommand = new DelegateCommand (OpenProjectsPage);
-            NavButtons.Add(_userProjectsBtnName,OpenProjectsPageCommand);
+            OpenDesksPageCommand = new DelegateCommand(OpenDesksPage);
+            NavButtons.Add(_userDesksBtnName, OpenDesksPageCommand);
 
-            OpenTasksPageCommand = new DelegateCommand (OpenTasksPage);
-            NavButtons.Add(_userTasksBtnName,OpenTasksPageCommand);
+            OpenProjectsPageCommand = new DelegateCommand(OpenProjectsPage);
+            NavButtons.Add(_userProjectsBtnName, OpenProjectsPageCommand);
+
+            OpenTasksPageCommand = new DelegateCommand(OpenTasksPage);
+            NavButtons.Add(_userTasksBtnName, OpenTasksPageCommand);
 
             if (CurrentUser.Status == UserStatus.Admin)
             {
                 OpenUserManagementCommand = new DelegateCommand(OpenUserManagement);
-                NavButtons.Add(_manageUserBtnName,OpenUserManagementCommand);
+                NavButtons.Add(_manageUserBtnName, OpenUserManagementCommand);
             }
 
-            LogoutCommand = new DelegateCommand (Logout);
-            NavButtons.Add(_logoutBtnName,LogoutCommand);
+            LogoutCommand = new DelegateCommand(Logout);
+            NavButtons.Add(_logoutBtnName, LogoutCommand);
 
             OpenMyInfoPage();
         }
@@ -104,10 +104,10 @@ namespace TaskManagerCourse.Client.ViewModels
 
         public Dictionary<string, DelegateCommand> NavButtons
         {
-            get => _navButtons; 
-            set 
-            { 
-                _navButtons = value; 
+            get => _navButtons;
+            set
+            {
+                _navButtons = value;
                 RaisePropertyChanged(nameof(NavButtons));
             }
         }
@@ -141,7 +141,7 @@ namespace TaskManagerCourse.Client.ViewModels
         {
             var page = new UserInfoPage();
             OpenPage(page, _userInfoBtnName, this);
-            
+
         }
 
         private void OpenDesksPage()
@@ -183,7 +183,7 @@ namespace TaskManagerCourse.Client.ViewModels
 
         #endregion
 
-      
+
 
         private void OpenPage(Page page, string pageName, BindableBase viewModel)
         {
