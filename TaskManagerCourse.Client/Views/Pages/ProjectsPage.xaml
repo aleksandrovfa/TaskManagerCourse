@@ -32,18 +32,18 @@
                                 <StackPanel Margin="10">
                                     <TextBlock Text="{Binding Path=Model.Name}"
                                                Style="{StaticResource commonTBlock}"/>
-                                    
-                                  
-                                    
+
+
+
                                     <Image Source="{Binding Path=Image}" Width="100" Height="100"/>
-                                    
+
                                     <Button Content="Open" 
                                             Command="{Binding Path= DataContext.ShowProjectInfoCommand,
                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                             CommandParameter="{Binding Path=Model.Id}"
                                             Style="{StaticResource commonBtn}"/>
-                                    
-                                    
+
+
                                     <Button Content="Edit" 
                                             Command="{Binding Path= DataContext.OpenUpdateProjectCommand,
                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -57,6 +57,15 @@
             </ScrollViewer>
         </Grid>
         <Grid Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedProject.Model}" Value="{x:Null}">
+                            <Setter Property="Width"  Value="0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
